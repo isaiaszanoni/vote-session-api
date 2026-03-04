@@ -3,12 +3,12 @@ package com.siccase.vote_session_api.service;
 import com.siccase.vote_session_api.dto.request.StartSessionDTO;
 import com.siccase.vote_session_api.dto.request.TopicRequestDTO;
 import com.siccase.vote_session_api.enums.SessionStatusEnum;
+import com.siccase.vote_session_api.exception.TopicNotFoundException;
 import com.siccase.vote_session_api.model.Topic;
 import com.siccase.vote_session_api.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,7 +40,7 @@ public class TopicService {
     // TODO: return SessionResponseDTO
     public void startSession(StartSessionDTO startSession) {
         Topic topic = repository.findById(startSession.getTopicId())
-                .orElseThrow(() -> new ObjectNotFoundException("Topic not find with id: ", startSession.getTopicId()));
+                .orElseThrow(() -> new TopicNotFoundException("Topic not found with id: " + startSession.getTopicId().toString()));
         topicCanBeStarted(topic);
 
         topic.setFinishAt(calculateFinishDate(startSession.getDuration()));
@@ -73,7 +73,7 @@ public class TopicService {
         LocalDateTime now = LocalDateTime.now();
 
         if (duration == null || duration.getValue() == null || duration.getTimeUnit() == null) {
-            log.info("Received session with invalid/incomplete value to duration... " +
+            log.info("Received session with incomplete value to duration... " +
                     "setting the default time: {} minute", DEFAULT_DURATION_SESSION_MINUTES);
             return now.plusMinutes(DEFAULT_DURATION_SESSION_MINUTES);
         }
