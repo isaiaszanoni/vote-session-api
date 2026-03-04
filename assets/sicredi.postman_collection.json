@@ -127,7 +127,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/api/v1/topics/d9cd0706-9588-4f22-aa41-851b25f0ccce/sessions/result",
+									"raw": "https://vote-session-api-production.up.railway.app/api/v1/topics/d9cd0706-9588-4f22-aa41-851b25f0ccce/sessions/result",
 									"protocol": "http",
 									"host": [
 										"localhost"
