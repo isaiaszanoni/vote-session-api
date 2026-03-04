@@ -1,6 +1,9 @@
 package com.siccase.vote_session_api.controller;
 
 import com.siccase.vote_session_api.dto.response.ResponseDTO;
+import com.siccase.vote_session_api.exception.MemberAlreadyVoteException;
+import com.siccase.vote_session_api.exception.SessionExpiredException;
+import com.siccase.vote_session_api.exception.SessionNotActiveException;
 import com.siccase.vote_session_api.exception.TopicNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         // TODO: create message more user friendly
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ResponseDTO(HttpStatus.BAD_REQUEST.value(), constraintViolationException.getMessage(), LocalDateTime.now(), null));
+    }
+
+    @ExceptionHandler(value = {SessionNotActiveException.class})
+    public ResponseEntity<?> handleSessionNotActiveException(SessionNotActiveException sessionNotActiveException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDTO(400, sessionNotActiveException.getMessage(), LocalDateTime.now(),null));
+    }
+
+    @ExceptionHandler(value = {SessionExpiredException.class})
+    public ResponseEntity<?> handleSessionExpired(SessionExpiredException sessionExpiredException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDTO(400, sessionExpiredException.getMessage(), LocalDateTime.now(), null));
+    }
+
+    @ExceptionHandler(value = {MemberAlreadyVoteException.class})
+    public ResponseEntity<?> handleMemberAlreadyVote(MemberAlreadyVoteException memberAlreadyVoteException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDTO(400, memberAlreadyVoteException.getMessage(), LocalDateTime.now(), null));
     }
 
 }

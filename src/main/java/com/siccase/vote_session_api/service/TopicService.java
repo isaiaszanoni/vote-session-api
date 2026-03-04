@@ -2,7 +2,14 @@ package com.siccase.vote_session_api.service;
 
 import com.siccase.vote_session_api.dto.request.StartSessionDTO;
 import com.siccase.vote_session_api.dto.request.TopicRequestDTO;
+import com.siccase.vote_session_api.dto.request.VoteRequestDTO;
+import com.siccase.vote_session_api.dto.response.SessionResponseDTO;
+import com.siccase.vote_session_api.dto.response.TopicResponseDTO;
+import com.siccase.vote_session_api.dto.response.VoteResponseDTO;
 import com.siccase.vote_session_api.enums.SessionStatusEnum;
+import com.siccase.vote_session_api.exception.MemberAlreadyVoteException;
+import com.siccase.vote_session_api.exception.SessionExpiredException;
+import com.siccase.vote_session_api.exception.SessionNotActiveException;
 import com.siccase.vote_session_api.exception.TopicNotFoundException;
 import com.siccase.vote_session_api.model.Topic;
 import com.siccase.vote_session_api.repository.TopicRepository;
@@ -12,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -21,8 +30,10 @@ public class TopicService {
 
     private final TopicRepository repository;
 
+    private final VoteService voteService;
+
     // TODO: return TopicResponseDTO
-    public void createTopic(TopicRequestDTO topic) {
+    public TopicResponseDTO createTopic(TopicRequestDTO topic) {
         repository.findFirstByTitleAndSessionStatusNot(topic.getTitle(), SessionStatusEnum.FINISHED).ifPresent(existentTopic -> {
             if (existentTopic.getSessionStatus() == SessionStatusEnum.PENDING || existentTopic.getSessionStatus() == SessionStatusEnum.ACTIVE) {
                 throw new IllegalStateException("Already exists another topic active or pending with the same title");
@@ -34,13 +45,13 @@ public class TopicService {
                 .sessionStatus(SessionStatusEnum.PENDING)
                 .build();
 
-        repository.save(newTopic);
+        Topic savedTopic = repository.save(newTopic);
+        return new TopicResponseDTO(newTopic.getId(), newTopic.getTitle(), newTopic.getSessionStatus());
     }
 
-    // TODO: return SessionResponseDTO
-    public void startSession(StartSessionDTO startSession) {
+    public SessionResponseDTO startSession(StartSessionDTO startSession) {
         Topic topic = repository.findById(startSession.getTopicId())
-                .orElseThrow(() -> new TopicNotFoundException("Topic not found with id: " + startSession.getTopicId().toString()));
+                .orElseThrow(() -> new TopicNotFoundException(startSession.getTopicId()));
         topicCanBeStarted(topic);
 
         topic.setFinishAt(calculateFinishDate(startSession.getDuration()));
@@ -48,7 +59,14 @@ public class TopicService {
         topic.setSessionStatus(SessionStatusEnum.ACTIVE);
 
         log.info("Initializing session of topic: {}", topic.getId());
-        repository.save(topic);
+        Topic updatedTopic = repository.save(topic);
+        return new SessionResponseDTO(updatedTopic.getId(),
+                updatedTopic.getTitle(),
+                updatedTopic.getSessionStatus(),
+                updatedTopic.getStartAt(),
+                updatedTopic.getFinishAt()
+        );
+
     }
 
     protected void topicCanBeStarted(Topic topic) {
@@ -87,5 +105,29 @@ public class TopicService {
             case HOUR -> now.plusHours(duration.getValue());
             case DAY -> now.plusDays(duration.getValue());
         };
+    }
+
+    public VoteResponseDTO registerVote(VoteRequestDTO voteRequest) {
+        Topic topic = repository.findById(voteRequest.getTopicId())
+                .orElseThrow(() -> new TopicNotFoundException(voteRequest.getTopicId()));
+
+        if (topic.getSessionStatus() != SessionStatusEnum.ACTIVE) {
+            throw new SessionNotActiveException("Topic session is not active");
+        }
+
+        if (topic.getFinishAt().isBefore(LocalDateTime.now())) {
+            throw new SessionExpiredException("Session has ended");
+        }
+
+        voteService.getVoteByMemberCpfAndTopicId(voteRequest.getMemberCpf(), voteRequest.getTopicId()).ifPresent(existentVote -> {
+            throw new MemberAlreadyVoteException();
+        });
+
+        return null;
+    }
+
+    public Optional<Topic> getTopicById(UUID topicId) {
+        return repository.findById(topicId);
+
     }
 }
