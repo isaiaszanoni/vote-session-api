@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "e856bd96-23ab-4a6a-a89e-771da83b2aa0",
+		"name": "sicredi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11464876"
+	},
+	"item": [
+		{
+			"name": "vote-session-api",
+			"item": [
+				{
+					"name": "Topic",
+					"item": [
+						{
+							"name": "new topic",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Você recomendaria a SICREDI para um amigo?\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://vote-session-api-production.up.railway.app/api/v1/topics",
+									"protocol": "https",
+									"host": [
+										"vote-session-api-production",
+										"up",
+										"railway",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"topics"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "start session - recomendaria sicredi",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"topicId\": \"bfa06fcf-9693-4cb3-afe8-7a12d73e9f04\",\n    \"duration\": {\n        \"timeUnit\": \"HOUR\",\n        \"value\": 3\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://vote-session-api-production.up.railway.app/api/v1/topics/sessions/start",
+									"protocol": "https",
+									"host": [
+										"vote-session-api-production",
+										"up",
+										"railway",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"topics",
+										"sessions",
+										"start"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "start session",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"topicId\": \"d9cd0706-9588-4f22-aa41-851b25f0ccce\",\n    \"duration\": {\n        \"timeUnit\": \"MINUTE\",\n        \"value\": 4\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://vote-session-api-production.up.railway.app/api/v1/topics/sessions/start",
+									"protocol": "https",
+									"host": [
+										"vote-session-api-production",
+										"up",
+										"railway",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"topics",
+										"sessions",
+										"start"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "session result",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/v1/topics/d9cd0706-9588-4f22-aa41-851b25f0ccce/sessions/result",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"topics",
+										"d9cd0706-9588-4f22-aa41-851b25f0ccce",
+										"sessions",
+										"result"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Votes",
+					"item": [
+						{
+							"name": "vote",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"topicId\": \"d9cd0706-9588-4f22-aa41-851b25f0ccce\",\n    \"memberCpf\": \"47458965499\",\n    \"vote\": \"SIM\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://vote-session-api-production.up.railway.app/api/v1/votes",
+									"protocol": "https",
+									"host": [
+										"vote-session-api-production",
+										"up",
+										"railway",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"votes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
