@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+*/build/
+*/*/build/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Java
+*.log
+*.class
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.local
+*.env
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Tests
+test-results/
+test-output/
+
+# Others
+README.md
+HELP.md
