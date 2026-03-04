@@ -4,9 +4,9 @@ import com.siccase.vote_session_api.dto.request.VoteRequestDTO;
 import com.siccase.vote_session_api.dto.response.ResponseDTO;
 import com.siccase.vote_session_api.dto.response.VoteResponseDTO;
 import com.siccase.vote_session_api.service.VoteService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +24,7 @@ public class VoteControllerV1 {
     private final VoteService service;
 
     @PostMapping()
+    @Operation(summary = "Endpoint para votar em um tópico que esteja com sessão em andamento")
     public ResponseEntity<ResponseDTO> vote(@RequestBody VoteRequestDTO voteRequest) {
         VoteResponseDTO response = service.registerVote(voteRequest);
         return ResponseEntity.status(HttpStatus.CREATED)

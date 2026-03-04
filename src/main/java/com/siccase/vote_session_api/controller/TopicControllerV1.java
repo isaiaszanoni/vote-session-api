@@ -7,6 +7,7 @@ import com.siccase.vote_session_api.dto.response.SessionResponseDTO;
 import com.siccase.vote_session_api.dto.response.SessionResultDTO;
 import com.siccase.vote_session_api.dto.response.TopicResponseDTO;
 import com.siccase.vote_session_api.service.TopicService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ public class TopicControllerV1 {
     private final TopicService service;
 
     @PostMapping()
+    @Operation(summary = "Cria um novo tópico", description = "Recebe o título de um novo tópico e cria-o na base de dados")
     public ResponseEntity<ResponseDTO> createTopic(@RequestBody TopicRequestDTO topic) {
         TopicResponseDTO response = service.createTopic(topic);
         return ResponseEntity.ok(
@@ -36,6 +38,7 @@ public class TopicControllerV1 {
     }
 
     @PostMapping("/sessions/start")
+    @Operation(summary = "Inicia uma nova sessão de votação em cima de um tópico", description = "Recebe id do tópico e duração da sessão")
     public ResponseEntity<ResponseDTO> startSession(@RequestBody StartSessionDTO startSessionDTO) {
         SessionResponseDTO response = service.startSession(startSessionDTO);
         return ResponseEntity.ok(
@@ -43,6 +46,7 @@ public class TopicControllerV1 {
     }
 
     @GetMapping("/{topicId}/sessions/result")
+    @Operation(summary = "Calcula e retorna o resultado da votação")
     public ResponseEntity<ResponseDTO> getSessionResult(@PathVariable(value = "topicId") UUID topicId) {
         SessionResultDTO result = service.getSessionResult(topicId);
         return ResponseEntity.ok(
