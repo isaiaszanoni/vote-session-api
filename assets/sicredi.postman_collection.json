@@ -129,10 +129,12 @@
 								"url": {
 									"raw": "https://vote-session-api-production.up.railway.app/api/v1/topics/d9cd0706-9588-4f22-aa41-851b25f0ccce/sessions/result",
 									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
+                                    "host": [
+                                      "vote-session-api-production",
+                                      "up",
+                                      "railway",
+                                      "app"
+                                    ],
 									"path": [
 										"api",
 										"v1",
