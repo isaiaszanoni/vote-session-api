@@ -4,17 +4,22 @@ import com.siccase.vote_session_api.dto.request.StartSessionDTO;
 import com.siccase.vote_session_api.dto.request.TopicRequestDTO;
 import com.siccase.vote_session_api.dto.response.ResponseDTO;
 import com.siccase.vote_session_api.dto.response.SessionResponseDTO;
+import com.siccase.vote_session_api.dto.response.SessionResultDTO;
 import com.siccase.vote_session_api.dto.response.TopicResponseDTO;
 import com.siccase.vote_session_api.service.TopicService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/topics")
@@ -30,10 +35,17 @@ public class TopicControllerV1 {
                 new ResponseDTO(201, "Topic created successfully", LocalDateTime.now(), response));
     }
 
-    @PostMapping("/start-session")
+    @PostMapping("/sessions/start")
     public ResponseEntity<ResponseDTO> startSession(@RequestBody StartSessionDTO startSessionDTO) {
         SessionResponseDTO response = service.startSession(startSessionDTO);
         return ResponseEntity.ok(
                 new ResponseDTO(200, "Session started successfully", LocalDateTime.now(), response));
+    }
+
+    @GetMapping("/{topicId}/sessions/result")
+    public ResponseEntity<ResponseDTO> getSessionResult(@PathVariable(value = "topicId") UUID topicId) {
+        SessionResultDTO result = service.getSessionResult(topicId);
+        return ResponseEntity.ok(
+                new ResponseDTO(200, "Success", LocalDateTime.now(), result));
     }
 }

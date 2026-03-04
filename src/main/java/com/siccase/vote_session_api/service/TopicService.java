@@ -4,14 +4,19 @@ import com.siccase.vote_session_api.dto.request.StartSessionDTO;
 import com.siccase.vote_session_api.dto.request.TopicRequestDTO;
 import com.siccase.vote_session_api.dto.request.VoteRequestDTO;
 import com.siccase.vote_session_api.dto.response.SessionResponseDTO;
+import com.siccase.vote_session_api.dto.response.SessionResultDTO;
 import com.siccase.vote_session_api.dto.response.TopicResponseDTO;
 import com.siccase.vote_session_api.dto.response.VoteResponseDTO;
+import com.siccase.vote_session_api.enums.DecisionOfTopicEnum;
+import com.siccase.vote_session_api.enums.ResponseOptionsEnum;
 import com.siccase.vote_session_api.enums.SessionStatusEnum;
 import com.siccase.vote_session_api.exception.MemberAlreadyVoteException;
 import com.siccase.vote_session_api.exception.SessionExpiredException;
 import com.siccase.vote_session_api.exception.SessionNotActiveException;
+import com.siccase.vote_session_api.exception.SessionNotFinishedException;
 import com.siccase.vote_session_api.exception.TopicNotFoundException;
 import com.siccase.vote_session_api.model.Topic;
+import com.siccase.vote_session_api.model.Vote;
 import com.siccase.vote_session_api.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -106,8 +113,59 @@ public class TopicService {
         };
     }
 
-    public Optional<Topic> getTopicById(UUID topicId) {
-        return repository.findById(topicId);
+    public Topic getTopicById(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() ->  new TopicNotFoundException(id));
+    }
 
+    public SessionResultDTO getSessionResult(UUID id) {
+        Topic topic = getTopicById(id);
+
+        validateTopicIsFinished(topic);
+
+        // get votes
+        List<Vote> votes = voteService.getAllVotesByTopicId(id);
+        if (votes == null || votes.isEmpty()) {
+            return new SessionResultDTO();
+        }
+
+        long totalOfVotes = votes.size();
+        long yesVotes = votes.stream()
+                .filter(vote -> vote.getVote() == ResponseOptionsEnum.SIM)
+                .count();
+        long noVotes = totalOfVotes - yesVotes;
+
+        double yesPercent = (double) (yesVotes * 100) / totalOfVotes;
+        double noPercent = (double) (noVotes * 100) / totalOfVotes;
+
+        DecisionOfTopicEnum decision;
+        if (yesVotes > noVotes) {
+            decision = DecisionOfTopicEnum.YES;
+        } else if (yesVotes < noVotes) {
+            decision = DecisionOfTopicEnum.NO;
+        } else {
+            decision = DecisionOfTopicEnum.WITHDRAW;
+        }
+
+        return SessionResultDTO.builder()
+                .topicId(topic.getId())
+                .startedAt(topic.getStartAt())
+                .finishedAt(topic.getFinishAt())
+                .decision(decision)
+                .yesVotesPercent(yesPercent)
+                .noVotesPercent(noPercent)
+                .sessionStatus(topic.getSessionStatus())
+                .totalOfVotes(totalOfVotes)
+                .build();
+    }
+
+    public void validateTopicIsFinished(Topic topic) {
+        if (topic.getSessionStatus() != SessionStatusEnum.FINISHED) {
+            throw new SessionNotFinishedException("Topic " + topic.getId().toString() + " is not finished");
+        }
+
+        if (topic.getFinishAt() == null) {
+            throw new IllegalStateException("Topic should have FinishedAt date to get result");
+        }
     }
 }

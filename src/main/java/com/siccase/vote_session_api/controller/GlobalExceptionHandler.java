@@ -4,6 +4,7 @@ import com.siccase.vote_session_api.dto.response.ResponseDTO;
 import com.siccase.vote_session_api.exception.MemberAlreadyVoteException;
 import com.siccase.vote_session_api.exception.SessionExpiredException;
 import com.siccase.vote_session_api.exception.SessionNotActiveException;
+import com.siccase.vote_session_api.exception.SessionNotFinishedException;
 import com.siccase.vote_session_api.exception.TopicNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleSessionNotActiveException(SessionNotActiveException sessionNotActiveException) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ResponseDTO(400, sessionNotActiveException.getMessage(), LocalDateTime.now(),null));
+    }
+
+    @ExceptionHandler(value = {SessionNotFinishedException.class})
+    public ResponseEntity<?> handleSessionNotFinishedException(SessionNotFinishedException sessionNotFinishedException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDTO(400, sessionNotFinishedException.getMessage(), LocalDateTime.now(),null));
     }
 
     @ExceptionHandler(value = {SessionExpiredException.class})

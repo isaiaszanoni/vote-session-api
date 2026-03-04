@@ -2,6 +2,7 @@ package com.siccase.vote_session_api.dto.response;
 
 import com.siccase.vote_session_api.enums.SessionStatusEnum;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
