@@ -46,7 +46,7 @@ public class TopicService {
                 .build();
 
         Topic savedTopic = repository.save(newTopic);
-        return new TopicResponseDTO(newTopic.getId(), newTopic.getTitle(), newTopic.getSessionStatus());
+        return new TopicResponseDTO(savedTopic.getId(), savedTopic.getTitle(), savedTopic.getSessionStatus());
     }
 
     public SessionResponseDTO startSession(StartSessionDTO startSession) {
@@ -66,7 +66,6 @@ public class TopicService {
                 updatedTopic.getStartAt(),
                 updatedTopic.getFinishAt()
         );
-
     }
 
     protected void topicCanBeStarted(Topic topic) {
@@ -105,25 +104,6 @@ public class TopicService {
             case HOUR -> now.plusHours(duration.getValue());
             case DAY -> now.plusDays(duration.getValue());
         };
-    }
-
-    public VoteResponseDTO registerVote(VoteRequestDTO voteRequest) {
-        Topic topic = repository.findById(voteRequest.getTopicId())
-                .orElseThrow(() -> new TopicNotFoundException(voteRequest.getTopicId()));
-
-        if (topic.getSessionStatus() != SessionStatusEnum.ACTIVE) {
-            throw new SessionNotActiveException("Topic session is not active");
-        }
-
-        if (topic.getFinishAt().isBefore(LocalDateTime.now())) {
-            throw new SessionExpiredException("Session has ended");
-        }
-
-        voteService.getVoteByMemberCpfAndTopicId(voteRequest.getMemberCpf(), voteRequest.getTopicId()).ifPresent(existentVote -> {
-            throw new MemberAlreadyVoteException();
-        });
-
-        return null;
     }
 
     public Optional<Topic> getTopicById(UUID topicId) {

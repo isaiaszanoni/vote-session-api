@@ -21,8 +21,6 @@ public class TopicValidation {
         Topic topic = topicRepository.findById(id)
                 .orElseThrow(() -> new TopicNotFoundException(id));
 
-        // TODO: consider call to close topic here
-
         if (topic.getSessionStatus() != SessionStatusEnum.ACTIVE) {
             throw new SessionNotActiveException("Topic session is not active");
         }
