@@ -14,29 +14,29 @@ Altere o arquivo /vote-session-api/src/main/resources/application.yml. Basta cop
 
 ```
 spring:
-application:
-name: vote-session-api
+  application:
+      name: vote-session-api
 
-datasource:
-url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_SCHEMA:vote_session_api}?allowPublicKeyRetrieval=true&useSSL=false&zeroDateTimeBehavior=convertToNull
-username: ${DB_USER:root}
-password: ${DB_PASS:root}
-driver-class-name: com.mysql.cj.jdbc.Driver
-hikari:
-connection-timeout: 24000
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_SCHEMA:vote_session_api}?allowPublicKeyRetrieval=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+    username: ${DB_USER:root}
+    password: ${DB_PASS:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 24000
 
-jpa:
-hibernate:
-ddl-auto: update
-show-sql: false
-properties:
-hibernate:
-jdbc:
-time_zone: UTC
-dialect: org.hibernate.dialect.MySQL8Dialect
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
 server:
-port: ${PORT:8081}
+  port: ${PORT:8081}
 ```
 Na raiz do projeto, dê o comando `docker-compose up -d` para rodar o projeto em modo deamon
 Caso queira ver os logs da aplicação, utilize o comando `docker-compose logs -f`. O comando
@@ -47,6 +47,6 @@ O Swagger UI estará no endereço http://localhost:8080/swagger-ui.html.
 Já o banco de dados, caso você queira se conectar a ele com alguma ferramenta como DBeaver, por exemplo,
 estará na porta localhost:3307.
 
-Dentro da pasta vote-session-api/assets você encontrará uma collection do Postman com os endpoints da aplicação.
+Dentro da pasta `vote-session-api/assets` você encontrará uma collection do Postman com os endpoints da aplicação.
 Basta importar para o seu Postman ou Insomnia e utilizar!
 
