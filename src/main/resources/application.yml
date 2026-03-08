@@ -19,3 +19,11 @@ logging:
   level:
     com.siccase.vote_session_api: INFO
     org.springframework.web: INFO
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    try-it-out-enabled: true
+  api-docs:
+    path: /v3/api-docs
